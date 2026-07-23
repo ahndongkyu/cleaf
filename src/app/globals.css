@@ -1,0 +1,444 @@
+@import "tailwindcss";
+
+/* ===== CLEAR FC · Glass Jade ===== */
+:root {
+  --clearfc-bg: #f7fbf9;
+  --clearfc-surface: #ffffff;
+  --clearfc-surface-2: #edf7f3;
+  --clearfc-surface-3: #e3f1eb;
+
+  --clearfc-ink: #20302d;
+  --clearfc-navy: #20302d;
+  --clearfc-text: #31423e;
+  --clearfc-muted: #71817d;
+  --clearfc-muted-2: #92a09d;
+  --clearfc-faint: #adb8b5;
+
+  --clearfc-blue: #16a085;
+  --clearfc-blue-strong: #0d806a;
+  --clearfc-blue-tint: #ddf4ec;
+  --clearfc-blue-tint-tx: #0d806a;
+
+  --clearfc-pink: #e95662;
+  --clearfc-danger: #d94a59;
+
+  --clearfc-fw-tx: #0d806a; --clearfc-fw-bg: #ddf4ec;
+  --clearfc-mf-tx: #20302d; --clearfc-mf-bg: #e6f0ec;
+  --clearfc-df-tx: #71817d; --clearfc-df-bg: #f0f6f3;
+
+  --clearfc-hero-grad: linear-gradient(148deg, #29413a 0%, #20302d 60%, #172622 100%);
+  --clearfc-hero-glow: radial-gradient(circle, rgba(22, 160, 133, 0.48), transparent 70%);
+  --clearfc-hero-border: transparent;
+  --clearfc-hero-accent: #8be1c8;
+  --clearfc-hero-num: #78d9bd;
+  --clearfc-hero-chip: rgba(255, 255, 255, 0.09);
+  --clearfc-hero-line: rgba(255, 255, 255, 0.11);
+  --clearfc-on-hero: #ffffff;
+  --clearfc-on-hero-sub: rgba(255, 255, 255, 0.55);
+
+  --clearfc-divider: #e7f0ec;
+  --clearfc-border: #d4e7e0;
+  --clearfc-border-blue: #c9e8dd;
+  --clearfc-dash: #b8dcd0;
+
+  --clearfc-nav-bg: rgba(255, 255, 255, 0.94);
+  --clearfc-nav-border: #dcece6;
+
+  --clearfc-shadow-sm: 0 3px 12px -8px rgba(32, 48, 45, 0.13);
+  --clearfc-shadow-md: 0 8px 22px -14px rgba(32, 48, 45, 0.15);
+  --clearfc-shadow-lg: 0 10px 28px -14px rgba(32, 48, 45, 0.16);
+  --clearfc-shadow-hero: 0 22px 44px -20px rgba(32, 48, 45, 0.58);
+  --clearfc-shadow-btn: 0 6px 14px -6px rgba(22, 160, 133, 0.45);
+
+  --clearfc-avatar-stroke: #9daaa6;
+
+  /* 남색 강조 패널 (히어로/로그인/스코어 카드) — 라이트/다크 공통으로 항상 짙은 남색 유지.
+     --clearfc-navy(헤딩 텍스트 색)와는 별개 변수라 다크모드에서 뒤집히지 않음 */
+  --clearfc-panel: #20302d;
+  --clearfc-panel-soft: rgba(255, 255, 255, 0.12);
+
+  /* 토스트: 라이트=어두운 배경+흰 글씨 */
+  --toast-bg: #20302d;
+  --toast-fg: #ffffff;
+
+  /* 참석 투표 색 (라이트) */
+  --vote-going: #1d9e75;
+  --vote-draw: #888780;
+  --vote-lose: #dc2f3c;
+}
+
+/* ===== 다크 (TURN 5) — next-themes .dark ===== */
+.dark {
+  --clearfc-bg: #0d1d1a;
+  --clearfc-surface: #172a25;
+  --clearfc-surface-2: rgba(255, 255, 255, 0.06);
+  --clearfc-surface-3: rgba(255, 255, 255, 0.06);
+
+  --clearfc-ink: #eaf5f0;
+  --clearfc-navy: #eaf5f0;
+  --clearfc-text: #d4e4de;
+  --clearfc-muted: #9eb4ad;
+  --clearfc-muted-2: #8da39c;
+  --clearfc-faint: #5b7069;
+
+  --clearfc-blue: #3ac8a5;
+  --clearfc-blue-strong: #74dfc3;
+  --clearfc-blue-tint: rgba(58, 200, 165, 0.16);
+  --clearfc-blue-tint-tx: #74dfc3;
+
+  --clearfc-pink: #ff8590;
+  --clearfc-danger: #f1717b;
+
+  --clearfc-fw-tx: #74dfc3; --clearfc-fw-bg: rgba(58, 200, 165, 0.16);
+  --clearfc-mf-tx: #eaf5f0; --clearfc-mf-bg: rgba(255, 255, 255, 0.08);
+  --clearfc-df-tx: #8da39c; --clearfc-df-bg: rgba(255, 255, 255, 0.06);
+
+  --clearfc-hero-grad: linear-gradient(148deg, #203a32 0%, #142720 62%, #0e1d18 100%);
+  --clearfc-hero-glow: radial-gradient(circle, rgba(58, 200, 165, 0.36), transparent 70%);
+  --clearfc-hero-border: rgba(58, 200, 165, 0.14);
+  --clearfc-hero-accent: #82e4c7;
+  --clearfc-hero-num: #74dfc3;
+  --clearfc-hero-chip: rgba(255, 255, 255, 0.07);
+  --clearfc-hero-line: rgba(255, 255, 255, 0.1);
+  --clearfc-on-hero: #ffffff;
+  --clearfc-on-hero-sub: rgba(255, 255, 255, 0.55);
+
+  --clearfc-divider: rgba(255, 255, 255, 0.08);
+  --clearfc-border: rgba(255, 255, 255, 0.06);
+  --clearfc-border-blue: rgba(58, 200, 165, 0.3);
+  --clearfc-dash: rgba(58, 200, 165, 0.3);
+
+  --clearfc-nav-bg: rgba(15, 30, 26, 0.96);
+  --clearfc-nav-border: rgba(255, 255, 255, 0.06);
+
+  --clearfc-shadow-sm: 0 3px 12px -8px rgba(0, 0, 0, 0.5);
+  --clearfc-shadow-md: 0 8px 22px -14px rgba(0, 0, 0, 0.5);
+  --clearfc-shadow-lg: 0 10px 28px -14px rgba(0, 0, 0, 0.5);
+  --clearfc-shadow-hero: 0 22px 44px -20px rgba(0, 0, 0, 0.6);
+  --clearfc-shadow-btn: 0 6px 14px -6px rgba(76, 130, 255, 0.45);
+
+  --clearfc-avatar-stroke: #8b93a7;
+
+  /* 남색 강조 패널 — 다크에서도 페이지 배경(#0c1220)보다 살짝 밝은 짙은 남색 유지 */
+  --clearfc-panel: #1b342d;
+  --clearfc-panel-soft: rgba(255, 255, 255, 0.14);
+
+  /* 토스트: 다크=밝은 배경+어두운 글씨 (반전 → 대비 확보) */
+  --toast-bg: #eaf5f0;
+  --toast-fg: #20302d;
+
+  /* 참석 투표 색 (다크 — 틸그린/슬레이트/소프트로즈, 남색 팔레트와 조화) */
+  --vote-going: #2f9e8b;
+  --vote-draw: #2a3450;
+  --vote-lose: #d95d63;
+}
+
+/* ===== Tailwind 토큰 매핑 (유틸 클래스가 위 변수 참조 → 다크 자동 전환) ===== */
+@theme inline {
+  --color-bg: var(--clearfc-bg);
+  --color-card: var(--clearfc-surface);
+  --color-sunken: var(--clearfc-surface-2);
+  --color-avatar: var(--clearfc-surface-3);
+  --color-panel: var(--clearfc-navy);
+  --color-accent: var(--clearfc-blue);
+  --color-accent-strong: var(--clearfc-blue-strong);
+  --color-tint: var(--clearfc-blue-tint);
+  --color-pink: var(--clearfc-pink);
+  --color-danger: var(--clearfc-danger);
+  --color-fg: var(--clearfc-navy);
+  --color-body: var(--clearfc-text);
+  --color-muted: var(--clearfc-muted);
+  --color-subtle: var(--clearfc-muted-2);
+  --color-faint: var(--clearfc-faint);
+  --color-line: var(--clearfc-border);
+  --color-divider: var(--clearfc-divider);
+  --color-borderblue: var(--clearfc-border-blue);
+  --color-onpanel: var(--clearfc-on-hero);
+  --color-onpanelmuted: var(--clearfc-on-hero-sub);
+
+  /* 포지션 태그 (디자이너: FW 블루 / MF 네이비 / DF 뉴트럴) */
+  --color-fw: var(--clearfc-fw-tx);
+  --color-mf: var(--clearfc-mf-tx);
+  --color-df: var(--clearfc-df-tx);
+  /* 피치 칩 색 (기능 구분 — 고정) */
+  --color-pos-gk: #ef9f27;
+  --color-pos-df: #3a7bd5;
+  --color-pos-mf: #639922;
+  --color-pos-fw: #d85a30;
+  --color-win: #1d9e75;
+  --color-draw: #888780;
+  --color-lose: var(--clearfc-danger);
+
+  /* 구 토큰 호환 (마이그레이션 중) — 남색 패널은 전용 --clearfc-panel 사용(헤딩 텍스트용 --clearfc-navy와 분리) */
+  --color-navy: var(--clearfc-panel);
+  --color-navy-soft: var(--clearfc-panel-soft);
+  --color-navy-muted: var(--clearfc-on-hero-sub);
+  --color-red: var(--clearfc-blue);
+  --color-red-soft: var(--clearfc-blue-tint);
+  --color-blue: var(--clearfc-blue);
+  /* bg-ink/border-ink는 토스트·영상버튼처럼 항상 짙은 고정색이 필요 (헤딩 텍스트와 분리) */
+  --color-ink: #131a2b;
+  --color-surface-0: var(--clearfc-bg);
+  --color-surface-1: var(--clearfc-surface-2);
+  --color-surface-2: var(--clearfc-surface);
+
+  --font-sans: var(--font-sans-kr);
+}
+
+html { height: 100%; }
+body {
+  background: var(--clearfc-bg);
+  color: var(--clearfc-ink);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: contain; /* 네이티브 당겨서 새로고침 억제 → 커스텀 PTR 사용 */
+}
+
+.app-shell {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background: var(--clearfc-bg);
+  position: relative;
+}
+
+.input {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--clearfc-border);
+  background: var(--clearfc-surface);
+  padding: 0.625rem 0.75rem;
+  font-size: 14px;
+  color: var(--clearfc-ink);
+}
+.input:focus { outline: none; border-color: var(--clearfc-blue); }
+
+/* iOS Safari의 date/time 컨트롤은 고유 최소 폭·높이를 가져서 좁은 카드에서 넘칠 수 있다. */
+.schedule-native-input {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  height: 44px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+@keyframes clearfc-update-attention {
+  0%, 100% { transform: scale(1); box-shadow: 0 5px 12px -6px rgba(85, 214, 182, 0.8); }
+  50% { transform: scale(1.045); box-shadow: 0 0 0 4px rgba(85, 214, 182, 0.18), 0 0 20px rgba(85, 214, 182, 0.34); }
+}
+
+.update-attention { animation: clearfc-update-attention 1.25s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .update-attention { animation: none; }
+}
+
+/* ===== 효과 클래스 ===== */
+/* 히어로(시즌 성적) 카드 — 딥네이비 그라데이션 + 우상단 글로우 */
+.hero-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  background: var(--clearfc-hero-grad);
+  border: 1px solid var(--clearfc-hero-border);
+  box-shadow: var(--clearfc-shadow-hero);
+  color: var(--clearfc-on-hero);
+}
+.hero-card::before {
+  content: "";
+  position: absolute;
+  top: -46px;
+  right: -34px;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  background: var(--clearfc-hero-glow);
+  pointer-events: none;
+}
+/* 다음 경기 — 밝은 블루 글로우 카드 */
+.next-match-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid color-mix(in srgb, var(--clearfc-blue) 30%, var(--clearfc-border));
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--clearfc-blue-tint) 62%, var(--clearfc-surface)), var(--clearfc-surface) 74%);
+  box-shadow:
+    0 20px 42px -24px color-mix(in srgb, var(--clearfc-blue) 70%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--clearfc-blue) 8%, transparent);
+  animation: next-match-pulse 3.4s ease-in-out infinite;
+}
+.next-match-card::before {
+  content: "";
+  position: absolute;
+  top: -82px;
+  right: -58px;
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--clearfc-blue) 24%, transparent), transparent 68%);
+  pointer-events: none;
+}
+.next-match-card::after {
+  content: "";
+  position: absolute;
+  inset: auto 24px 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--clearfc-blue) 55%, transparent), transparent);
+  pointer-events: none;
+}
+.next-match-card > * { position: relative; z-index: 1; }
+@keyframes next-match-pulse {
+  0%, 100% {
+    box-shadow:
+      0 17px 37px -24px color-mix(in srgb, var(--clearfc-blue) 47%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--clearfc-blue) 7%, transparent);
+  }
+  50% {
+    box-shadow:
+      0 20px 44px -22px color-mix(in srgb, var(--clearfc-blue) 70%, transparent),
+      0 0 19px -5px color-mix(in srgb, var(--clearfc-blue) 43%, transparent),
+      0 0 0 1px color-mix(in srgb, var(--clearfc-blue) 19%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .next-match-card { animation: none; }
+}
+.notice-detail-header::before {
+  content: "";
+  position: absolute;
+  right: -46px;
+  top: -54px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--clearfc-blue) 18%, transparent), transparent 70%);
+  pointer-events: none;
+}
+.notice-detail-header { position: relative; overflow: hidden; background: color-mix(in srgb, var(--clearfc-blue-tint) 42%, var(--clearfc-surface)); }
+.notice-detail-header > * { position: relative; z-index: 1; }
+/* 공지 리치 텍스트 편집기/본문 */
+.notice-editor:empty::before { content: attr(data-placeholder); color: var(--clearfc-faint); pointer-events: none; }
+.notice-editor h2,
+.notice-content h2 { margin: 1.25rem 0 0.55rem; font-size: 1.25rem; line-height: 1.5; font-weight: 700; color: var(--clearfc-ink); }
+.notice-editor h3,
+.notice-content h3 { margin: 1rem 0 0.45rem; font-size: 1.05rem; line-height: 1.55; font-weight: 700; color: var(--clearfc-ink); }
+.notice-editor p,
+.notice-content p { margin: 0.7rem 0; }
+.notice-editor ul,
+.notice-editor ol,
+.notice-content ul,
+.notice-content ol { margin: 0.8rem 0; padding-left: 1.4rem; }
+.notice-editor ul,
+.notice-content ul { list-style: disc; }
+.notice-editor ol,
+.notice-content ol { list-style: decimal; }
+.notice-editor blockquote,
+.notice-content blockquote { margin: 1rem 0; border-left: 3px solid var(--clearfc-blue); background: var(--clearfc-blue-tint); padding: 0.7rem 0.9rem; color: var(--clearfc-text); }
+.notice-editor strong,
+.notice-editor b,
+.notice-content strong,
+.notice-content b { font-weight: 700; color: var(--clearfc-ink); }
+.notice-content { min-height: 120px; font-size: 14px; line-height: 1.9; color: var(--clearfc-text); overflow-wrap: anywhere; }
+/* 브랜드 심볼 — CLEAR 제이드 그라데이션 + 글로우 */
+.brand-logo {
+  background: var(--clearfc-hero-grad);
+  box-shadow: 0 7px 16px -6px rgba(22, 160, 133, 0.36);
+  color: #fff;
+}
+/* 로고 워드마크 — 마스크로 색조를 테마별 제어 (PNG 알파를 마스크로 사용) */
+.brand-mark {
+  display: block;
+  background-color: #1b2547; /* 라이트: 네이비 잉크 (순검정보다 부드럽게) */
+  -webkit-mask: url("/logo/wordmark-white.png") left center / contain no-repeat;
+  mask: url("/logo/wordmark-white.png") left center / contain no-repeat;
+}
+.dark .brand-mark {
+  background-color: #d3dcec; /* 다크: 차분한 오프화이트 (톤다운) */
+}
+/* 홈 상단 로고 — next-themes가 붙이는 .dark 클래스 기준으로 명시 전환 */
+.home-brand-dark { display: none; }
+.dark .home-brand-light { display: none; }
+.dark .home-brand-dark { display: block; }
+/* 코멘트 활성 — 은은하게 숨쉬는 글로우 */
+@keyframes talk-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px var(--clearfc-blue), 0 0 2px 0 color-mix(in srgb, var(--clearfc-blue) 35%, transparent); }
+  50% { box-shadow: 0 0 0 1px var(--clearfc-blue), 0 0 14px 2px color-mix(in srgb, var(--clearfc-blue) 65%, transparent); }
+}
+.talk-glow { animation: talk-pulse 1.8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .talk-glow { animation: none; box-shadow: 0 0 0 1px var(--clearfc-blue); }
+}
+/* MOM 투표 진행중 — 금색 글로우 */
+@keyframes mom-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px #ef9f27, 0 0 4px 0 rgba(239, 159, 39, 0.4); }
+  50% { box-shadow: 0 0 0 1px #ef9f27, 0 0 18px 3px rgba(239, 159, 39, 0.7); }
+}
+.mom-glow { animation: mom-pulse 1.8s ease-in-out infinite; }
+/* 스크롤바 숨김 (초성 인덱스용) */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { width: 0; height: 0; display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .mom-glow { animation: none; box-shadow: 0 0 0 1px #ef9f27; }
+}
+/* 프로필 카드 그라데이션 (더보기·회원 정보) */
+.profile-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--clearfc-hero-grad);
+  box-shadow: var(--clearfc-shadow-hero);
+}
+.profile-card::before {
+  content: "";
+  position: absolute;
+  top: -30px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: var(--clearfc-hero-glow);
+  pointer-events: none;
+}
+/* 흰 카드 그림자 */
+.soft-card { box-shadow: var(--clearfc-shadow-md); }
+.soft-card-lg { box-shadow: var(--clearfc-shadow-lg); }
+
+.home-deck-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.home-deck-scroll::-webkit-scrollbar { display: none; }
+/* 버튼 글로우 */
+.btn-glow { box-shadow: var(--clearfc-shadow-btn); }
+/* 하단 네비 글래스 */
+.glass-nav {
+  background: var(--clearfc-nav-bg);
+  border-top: 1px solid var(--clearfc-nav-border);
+  backdrop-filter: saturate(140%) blur(8px);
+  -webkit-backdrop-filter: saturate(140%) blur(8px);
+}
+
+/* 토스트 박스 (라이트/다크 반전으로 항상 대비 확보) */
+.toast-box {
+  background: var(--toast-bg);
+  color: var(--toast-fg);
+}
+
+/* 버튼 탭/호버 피드백 — 누르면 살짝 눌리는 느낌(모바일 터치 확인용) */
+button:not(:disabled),
+a.tap {
+  transition: transform 0.12s ease, opacity 0.12s ease, filter 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+button:not(:disabled):active,
+a.tap:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+@media (hover: hover) {
+  button:not(:disabled):hover,
+  a.tap:hover {
+    opacity: 0.85;
+  }
+}
