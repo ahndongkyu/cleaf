@@ -47,7 +47,7 @@ export function SwipeSummaryDeck({ labels, dark = false, children, className = "
       </div>
 
       {count > 1 && (
-        <div className="absolute right-4 top-4 flex items-center" role="tablist" aria-label="카드 선택">
+        <div className="absolute inset-x-0 bottom-3.5 flex items-center justify-center" role="tablist" aria-label="카드 선택">
           {slides.map((_, index) => (
             <button
               key={index}

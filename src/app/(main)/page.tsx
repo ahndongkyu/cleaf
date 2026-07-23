@@ -55,14 +55,6 @@ export default async function HomePage() {
         <SeasonSelf season={season} summary={team.self} />
       </SwipeSummaryDeck>
 
-      {myStats && (
-        <SwipeSummaryDeck labels={["전체", "매칭", "자체전"]} className="rounded-[20px] border border-borderblue bg-card soft-card">
-          <MyRecordOverall season={season} stat={myStats.all} />
-          <MyMatchRecord stat={myStats.match} />
-          <MySelfRecord stat={myStats.self} />
-        </SwipeSummaryDeck>
-      )}
-
       {next ? (
         <section className="next-match-card p-4">
           <div className="relative mb-4 flex items-center justify-between">
@@ -83,6 +75,14 @@ export default async function HomePage() {
       ) : <EmptyNextMatch />}
 
       {next && <Suspense fallback={<WeatherSkeleton region={regionLabel(next.place_address)} />}><WeatherCard date={next.match_date} time={next.match_time} lat={next.place_lat} lng={next.place_lng} region={regionLabel(next.place_address)} /></Suspense>}
+
+      {myStats && (
+        <SwipeSummaryDeck labels={["전체", "매칭", "자체전"]} className="rounded-[20px] border border-borderblue bg-card soft-card">
+          <MyRecordOverall season={season} stat={myStats.all} />
+          <MyMatchRecord stat={myStats.match} />
+          <MySelfRecord stat={myStats.self} />
+        </SwipeSummaryDeck>
+      )}
 
       {pastMatches.length > 0 && (
         <SwipeSummaryDeck labels={pastMatches.map((match) => match.type === "self" ? "자체전" : "매칭")} className="rounded-[20px] border border-line bg-card soft-card">
