@@ -1,6 +1,7 @@
 import "server-only";
 import webpush from "web-push";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 const PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 const PRIVATE = process.env.VAPID_PRIVATE_KEY;
@@ -63,12 +64,27 @@ export async function sendPushToMembers(
   );
 }
 
-// 운영진/관리자에게만 푸시 발송.
-// 신청자 등 비운영진 세션에서도 호출 가능하도록 security definer 함수(manager_push_subs)로 구독 조회.
+// 운영진/관리자에게만 푸시 발송. 구독 정보는 서버의 서비스 롤로만 조회한다.
 export async function sendPushToManagers(payload: { title: string; body: string; url?: string }) {
   if (!ensure()) return;
-  const supabase = await createClient();
-  const { data } = await supabase.rpc("manager_push_subs");
+  const admin = createAdminClient();
+  if (!admin) return;
+  const { data: managers } = await admin
+    .from("members")
+    .select("id")
+    .in("role", ["manager", "admin"]);
+  const managerIds = (managers ?? []).map((member) => member.id as string);
+  if (managerIds.length === 0) return;
+  const { data: profiles } = await admin
+    .from("profiles")
+    .select("id")
+    .in("member_id", managerIds);
+  const profileIds = (profiles ?? []).map((profile) => profile.id as string);
+  if (profileIds.length === 0) return;
+  const { data } = await admin
+    .from("push_subscriptions")
+    .select("endpoint, p256dh, auth")
+    .in("profile_id", profileIds);
   await sendToSubscriptions(
     (data ?? []) as { endpoint: string; p256dh: string; auth: string }[],
     payload,

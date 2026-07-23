@@ -5,11 +5,12 @@ import Link from "next/link";
 import { Calendar, Check, ChevronDown, ChevronRight, MapPin, X } from "lucide-react";
 import { formatDateKo, dday } from "@/lib/format";
 import type { MatchRow } from "@/lib/data/matches";
+import { dateInSeoul, yearInSeoul } from "@/lib/date";
 
 const INITIAL_VISIBLE_MONTHS = 3;
 
 function past(m: MatchRow) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = dateInSeoul();
   return m.status === "cancelled" || m.score_for !== null || m.match_date < today;
 }
 
@@ -50,8 +51,9 @@ export function MatchList({
   const [month, setMonth] = useState(initialMonth);
   const [visibleMonthCount, setVisibleMonthCount] = useState(INITIAL_VISIBLE_MONTHS);
   const [periodPicker, setPeriodPicker] = useState<"year" | "month" | null>(null);
-  const currentYear = new Date().getFullYear();
-  const currentMonth = String(new Date().getMonth() + 1).padStart(2, "0");
+  const today = dateInSeoul();
+  const currentYear = yearInSeoul();
+  const currentMonth = today.slice(5, 7);
 
   const upcoming = useMemo(
     () => matches.filter((m) => !past(m)).sort((a, b) => a.match_date.localeCompare(b.match_date)),
@@ -64,7 +66,7 @@ export function MatchList({
 
   const years = useMemo(() => {
     const values = new Set(completed.map((m) => Number(m.match_date.slice(0, 4))));
-    values.add(new Date().getFullYear());
+    values.add(yearInSeoul());
     values.add(initialYear);
     return [...values].sort((a, b) => b - a);
   }, [completed, initialYear]);

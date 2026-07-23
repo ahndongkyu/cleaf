@@ -7,7 +7,6 @@ import { POSITION_COLOR, type Position } from "@/lib/mock";
 import { setAttendance } from "@/lib/actions/matches";
 import { addAttendComment, deleteAttendComment } from "@/lib/actions/attend";
 import type { AttendComment } from "@/lib/data/attend";
-import { toast } from "@/lib/toast";
 
 type Status = "going" | "notGoing" | "undecided";
 type Person = { name: string; position1: string };

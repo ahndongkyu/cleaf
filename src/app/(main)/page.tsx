@@ -13,6 +13,7 @@ import { PlaceCopy } from "@/components/match/place-copy";
 import { BellButton } from "@/components/layout/bell-button";
 import { SwipeSummaryDeck } from "@/components/home/swipe-summary-deck";
 import { TeamLogo, TeamWordmark } from "@/components/ui/team-brand";
+import { yearInSeoul } from "@/lib/date";
 
 type TeamSummary = { games: number; goals: number; conceded: number; win: number; draw: number; loss: number };
 
@@ -20,7 +21,7 @@ export default async function HomePage() {
   const [matches, profile, notifs] = await Promise.all([getMatches(), getMyProfile(), getNotifications()]);
   const myMemberId = (profile?.member_id as string | null) ?? null;
   const latestNotifAt = notifs[0]?.at ?? null;
-  const season = new Date().getFullYear();
+  const season = yearInSeoul();
   const myStats = myMemberId ? await getHomeMemberStats(myMemberId, season) : null;
 
   const upcoming = matches.filter((match) => !isPast(match)).sort((a, b) => a.match_date.localeCompare(b.match_date));

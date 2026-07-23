@@ -1,8 +1,10 @@
+import { yearInSeoul } from "@/lib/date";
+
 // 시즌 = 연도. 시작연도부터 "현재연도"까지. 해가 바뀌면 자동으로 새 연도가 기본.
 export const SEASON_START = 2026;
 
 export function currentSeason(): number {
-  return new Date().getFullYear();
+  return yearInSeoul();
 }
 
 // 현재연도부터 시작연도까지 내림차순 (셀렉트박스용)

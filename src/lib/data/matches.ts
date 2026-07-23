@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { Position } from "@/lib/mock";
+import { dateInSeoul, yearInSeoul } from "@/lib/date";
 
 export type MatchRow = {
   id: string;
@@ -35,7 +36,7 @@ export type AttendanceRow = {
 };
 
 export function isPast(m: { match_date: string; score_for: number | null; status?: string }) {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = dateInSeoul();
   return m.status === "cancelled" || m.score_for !== null || m.match_date < today;
 }
 
@@ -115,7 +116,7 @@ export async function getAttendanceMap(matchId: string) {
 
 // 팀 시즌 성적 (자체전 제외, 스코어 입력된 경기, 해당 시즌만 집계)
 export async function getTeamStats(season?: number) {
-  const y = season ?? new Date().getFullYear();
+  const y = season ?? yearInSeoul();
   const matches = await getMatches();
   const played = matches.filter(
     (m) =>

@@ -31,7 +31,7 @@ export function AppUpdateBanner() {
 
   useEffect(() => {
     mounted.current = true;
-    void checkForUpdate();
+    const initialCheck = window.setTimeout(() => void checkForUpdate(), 0);
     const interval = window.setInterval(() => void checkForUpdate(), CHECK_INTERVAL);
     const onVisibility = () => {
       if (document.visibilityState === "visible") void checkForUpdate();
@@ -39,6 +39,7 @@ export function AppUpdateBanner() {
     document.addEventListener("visibilitychange", onVisibility);
     return () => {
       mounted.current = false;
+      window.clearTimeout(initialCheck);
       window.clearInterval(interval);
       document.removeEventListener("visibilitychange", onVisibility);
     };

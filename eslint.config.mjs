@@ -12,6 +12,7 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    "scripts/generate-clear-legacy-import.mjs",
   ]),
 ]);
 

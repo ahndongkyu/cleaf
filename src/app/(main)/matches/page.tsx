@@ -3,6 +3,7 @@ import { Plus } from "lucide-react";
 import { getMatches } from "@/lib/data/matches";
 import { getMyProfile } from "@/lib/data/auth";
 import { MatchList } from "@/components/match/match-list";
+import { yearInSeoul } from "@/lib/date";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
@@ -14,7 +15,7 @@ export default async function MatchesPage({ searchParams }: { searchParams: Sear
   const parsedYear = Number(rawYear);
   const initialYear = Number.isInteger(parsedYear) && parsedYear >= 2000 && parsedYear <= 2100
     ? parsedYear
-    : new Date().getFullYear();
+    : yearInSeoul();
   const rawMonth = Array.isArray(query.month) ? query.month[0] : query.month;
   const initialMonth = rawMonth && /^(0[1-9]|1[0-2])$/.test(rawMonth) ? rawMonth : "all";
 

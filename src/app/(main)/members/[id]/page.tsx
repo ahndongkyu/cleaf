@@ -7,6 +7,7 @@ import { isManager, getMyProfile } from "@/lib/data/auth";
 import { POSITION_LABEL, POSITION_BADGE, DETAIL_POSITION_LABEL } from "@/lib/mock";
 import { Avatar } from "@/components/ui/avatar";
 import { getUniformSwatch } from "@/lib/uniforms";
+import { yearInSeoul } from "@/lib/date";
 
 export default async function ProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -92,7 +93,7 @@ export default async function ProfilePage({ params }: { params: Promise<{ id: st
       </div>
 
       <div>
-        <h2 className="mb-2.5 text-[13px] text-muted">{new Date().getFullYear()} 시즌 기록</h2>
+        <h2 className="mb-2.5 text-[13px] text-muted">{yearInSeoul()} 시즌 기록</h2>
         <div className="grid grid-cols-3 gap-2">
           <Stat v={stat?.games ?? 0} l="출전" />
           <Stat v={stat?.goals ?? 0} l="득점" />

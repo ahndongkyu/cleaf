@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendToSubscriptions } from "@/lib/push";
 import { recordNotificationEvent } from "@/lib/notification-events";
+import { dateInSeoul } from "@/lib/date";
 
 // D-1 경기 리마인드. Vercel Cron이 매일 호출 (Authorization: Bearer CRON_SECRET).
 export async function GET(request: Request) {
@@ -16,10 +17,7 @@ export async function GET(request: Request) {
   if (!admin) return NextResponse.json({ error: "service key not configured" }, { status: 503 });
 
   // 내일 날짜 (KST)
-  const kstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Seoul" }));
-  kstNow.setDate(kstNow.getDate() + 1);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const tomorrow = `${kstNow.getFullYear()}-${pad(kstNow.getMonth() + 1)}-${pad(kstNow.getDate())}`;
+  const tomorrow = dateInSeoul(new Date(Date.now() + 24 * 60 * 60 * 1000));
 
   const { data: matches } = await admin
     .from("matches")

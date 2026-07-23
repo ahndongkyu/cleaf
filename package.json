@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "check": "pnpm lint && pnpm build",
     "version:next": "pnpm version minor --no-git-tag-version --no-git-checks"
   },
   "dependencies": {
@@ -16,12 +17,13 @@
     "@supabase/supabase-js": "^2.108.2",
     "html-to-image": "^1.11.13",
     "lucide-react": "^1.22.0",
-    "next": "16.2.9",
+    "next": "16.2.11",
     "next-themes": "^0.4.6",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "recharts": "^3.9.0",
     "sanitize-html": "^2.17.6",
+    "sharp": "^0.35.3",
     "web-push": "^3.6.7"
   },
   "devDependencies": {
@@ -32,7 +34,7 @@
     "@types/sanitize-html": "^2.16.1",
     "@types/web-push": "^3.6.4",
     "eslint": "^9",
-    "eslint-config-next": "16.2.9",
+    "eslint-config-next": "16.2.11",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

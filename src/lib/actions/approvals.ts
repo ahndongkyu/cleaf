@@ -4,7 +4,6 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { isManager } from "@/lib/data/auth";
 import { sendPushToManagers } from "@/lib/push";
-import { AWAY_UNIFORM, HOME_UNIFORM } from "@/lib/uniforms";
 
 const toNum = (v: FormDataEntryValue | null): number | null => {
   const n = parseInt(String(v ?? "").trim(), 10);
@@ -31,6 +30,7 @@ export async function submitClaimName(formData: FormData) {
   if (
     !user ||
     !name ||
+    name.length > 40 ||
     !validMain.includes(position1) ||
     (validDetail[position1].length > 0 && !validDetail[position1].includes(position2)) ||
     numRed === null ||
@@ -40,7 +40,7 @@ export async function submitClaimName(formData: FormData) {
     numBlue < 0 ||
     numBlue > 99
   ) return;
-  await supabase.from("profiles").update({
+  const { error: profileError } = await supabase.from("profiles").update({
     claimed_name: name,
     claimed_position1: position1,
     claimed_position2: position2 || null,
@@ -48,13 +48,17 @@ export async function submitClaimName(formData: FormData) {
     claimed_num_blue: numBlue,
     signup_rejected_at: null,
   }).eq("id", user.id);
-  await supabase.rpc("record_signup_notification");
+  if (profileError) return;
+  const { data: shouldNotify, error: notificationError } = await supabase.rpc("record_signup_notification");
+  if (notificationError) return;
   // 운영진·관리자에게 가입 신청 알림 푸시
-  await sendPushToManagers({
-    title: "CLEAR FC · 새 가입 신청",
-    body: `${name} 님이 승인을 기다리고 있어요`,
-    url: "/admin/approvals",
-  });
+  if (shouldNotify) {
+    await sendPushToManagers({
+      title: "CLEAR FC · 새 가입 신청",
+      body: `${name} 님이 승인을 기다리고 있어요`,
+      url: "/admin/approvals",
+    });
+  }
   revalidatePath("/pending");
   revalidatePath("/admin/approvals");
   revalidatePath("/notifications");
@@ -63,8 +67,7 @@ export async function submitClaimName(formData: FormData) {
 
 // 승인(신규): 신청 정보로 새 회원 생성 + 계정 연결
 export async function createMemberFromSignup(profileId: string) {
-  if (!(await isManager())) return;
-  if (!profileId) return;
+  if (!(await isManager()) || !profileId) return { ok: false };
   const supabase = await createClient();
   const { data: p } = await supabase
     .from("profiles")
@@ -84,7 +87,7 @@ export async function createMemberFromSignup(profileId: string) {
     (prof.claimed_position1 !== "GK" && !prof.claimed_position2) ||
     prof.claimed_num_red == null ||
     prof.claimed_num_blue == null
-  ) return;
+  ) return { ok: false };
 
   const [{ data: allMembers }, { data: linkedProfiles }] = await Promise.all([
     supabase.from("members").select("id, name"),
@@ -95,45 +98,31 @@ export async function createMemberFromSignup(profileId: string) {
     (row) => !linkedIds.has(row.id) && normalizeName(row.name) === normalizeName(prof.claimed_name!),
   );
   if (sameName.length === 1) {
-    await supabase
-      .from("profiles")
-      .update({ member_id: sameName[0].id, signup_rejected_at: null })
-      .eq("id", profileId)
-      .is("member_id", null);
+    const { data, error } = await supabase.rpc("link_signup_profile", {
+      requested_profile_id: profileId,
+      requested_member_id: sameName[0].id,
+    });
+    if (error || !data) return { ok: false };
     revalidatePath("/admin/approvals");
     revalidatePath("/members");
     revalidatePath("/more");
-    return;
+    return { ok: true };
   }
-  if (sameName.length > 1) return;
+  if (sameName.length > 1) return { ok: false };
 
-  const { data: member } = await supabase
-    .from("members")
-    .insert({
-      name: prof.claimed_name,
-      position1: prof.claimed_position1 || "MF",
-      position2: prof.claimed_position2 || null,
-      role: "member",
-    })
-    .select("id")
-    .single();
-  if (!member) return;
-
-  const nums: { member_id: string; uniform: string; number: number }[] = [];
-  if (prof.claimed_num_red != null) nums.push({ member_id: member.id, uniform: HOME_UNIFORM, number: prof.claimed_num_red });
-  if (prof.claimed_num_blue != null) nums.push({ member_id: member.id, uniform: AWAY_UNIFORM, number: prof.claimed_num_blue });
-  if (nums.length) await supabase.from("member_numbers").insert(nums);
-
-  await supabase.from("profiles").update({ member_id: member.id }).eq("id", profileId);
+  const { data: memberId, error } = await supabase.rpc("create_member_from_signup", {
+    requested_profile_id: profileId,
+  });
+  if (error || !memberId) return { ok: false };
   revalidatePath("/admin/approvals");
   revalidatePath("/members");
   revalidatePath("/more");
+  return { ok: true };
 }
 
 // 승인: 대기 프로필을 로스터 회원과 연결
 export async function linkProfile(profileId: string, memberId: string) {
-  if (!(await isManager())) return;
-  if (!profileId || !memberId) return;
+  if (!(await isManager()) || !profileId || !memberId) return { ok: false };
 
   const supabase = await createClient();
   const [{ data: profile }, { data: member }, { data: linked }] = await Promise.all([
@@ -147,23 +136,30 @@ export async function linkProfile(profileId: string, memberId: string) {
     !member ||
     linked?.length ||
     normalizeName(profile.claimed_name) !== normalizeName(member.name)
-  ) return;
+  ) return { ok: false };
 
-  await supabase.from("profiles").update({ member_id: memberId, signup_rejected_at: null }).eq("id", profileId);
+  const { data, error } = await supabase.rpc("link_signup_profile", {
+    requested_profile_id: profileId,
+    requested_member_id: memberId,
+  });
+  if (error || !data) return { ok: false };
 
   revalidatePath("/admin/approvals");
   revalidatePath("/more");
+  return { ok: true };
 }
 
 export async function rejectSignup(profileId: string) {
-  if (!(await isManager()) || !profileId) return;
+  if (!(await isManager()) || !profileId) return { ok: false };
   const supabase = await createClient();
-  await supabase
+  const { error } = await supabase
     .from("profiles")
     .update({ signup_rejected_at: new Date().toISOString() })
     .eq("id", profileId)
     .is("member_id", null);
+  if (error) return { ok: false };
 
   revalidatePath("/admin/approvals");
   revalidatePath("/more");
+  return { ok: true };
 }

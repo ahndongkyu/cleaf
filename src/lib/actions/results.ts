@@ -18,22 +18,29 @@ function revalidateMatch(matchId: string) {
 
 // 최종 스코어 저장
 export async function saveScore(matchId: string, scoreFor: number, scoreAgainst: number) {
-  if (!(await isManager())) return;
+  if (
+    !(await isManager()) ||
+    !matchId ||
+    !Number.isInteger(scoreFor) ||
+    !Number.isInteger(scoreAgainst) ||
+    scoreFor < 0 ||
+    scoreFor > 99 ||
+    scoreAgainst < 0 ||
+    scoreAgainst > 99
+  ) return { ok: false };
   const supabase = await createClient();
 
-  // MOM 투표 마감시각: 첫 결과 입력 시점 + 1시간 (이미 있으면 유지)
-  const [{ data: cur }, { data: match }, { data: attendances }] = await Promise.all([
-    supabase.from("matches").select("mom_vote_close").eq("id", matchId).single(),
+  const [{ data: match }, { data: attendances }] = await Promise.all([
     supabase.from("matches").select("opponent, type, status").eq("id", matchId).single(),
     supabase.from("attendances").select("member_id").eq("match_id", matchId).eq("status", "going"),
   ]);
-  if (match?.status === "cancelled") return;
-  const update: Record<string, unknown> = { score_for: scoreFor, score_against: scoreAgainst, status: "past" };
-  if (!cur?.mom_vote_close) update.mom_vote_close = new Date(Date.now() + 60 * 60 * 1000).toISOString();
-
-  await supabase.from("matches").update(update).eq("id", matchId);
-  // 경기 종료 후에는 용병 실명을 DB에서도 제거한다.
-  await supabase.from("guests").update({ name: "용병" }).eq("match_id", matchId).neq("name", "용병");
+  if (!match || match.status === "cancelled") return { ok: false };
+  const { data: saved, error } = await supabase.rpc("finalize_match_result", {
+    requested_match_id: matchId,
+    requested_score_for: scoreFor,
+    requested_score_against: scoreAgainst,
+  });
+  if (error || !saved) return { ok: false };
 
   const memberIds = (attendances ?? []).map((attendance) => attendance.member_id as string).filter(Boolean);
   const label = match?.type === "self" ? match.opponent : `vs ${match?.opponent ?? ""}`;
@@ -60,6 +67,7 @@ export async function saveScore(matchId: string, scoreFor: number, scoreAgainst:
 
   revalidatePath("/notifications");
   revalidateMatch(matchId);
+  return { ok: true };
 }
 
 type GoalTeamSide = "red" | "sky" | null;

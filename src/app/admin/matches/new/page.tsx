@@ -6,9 +6,10 @@ import { PlaceSearch } from "@/components/match/place-search";
 import { MatchTimeField } from "@/components/match/match-time-field";
 import { getVenues } from "@/lib/data/venues";
 import { MatchSetupFields } from "@/components/match/match-setup-fields";
+import { dateInSeoul } from "@/lib/date";
 
 export default async function NewMatchPage() {
-  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
+  const today = dateInSeoul();
   const venues = await getVenues();
 
   return (

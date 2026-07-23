@@ -38,8 +38,12 @@ export function ScoreEditor({
         disabled={pending}
         onClick={() =>
           start(async () => {
-            await saveScore(matchId, f, a);
-            router.push(`/matches/${matchId}?toast=${encodeURIComponent("결과가 저장됐어요")}`);
+            const result = await saveScore(matchId, f, a);
+            if (result?.ok) {
+              router.push(`/matches/${matchId}?toast=${encodeURIComponent("결과가 저장됐어요")}`);
+            } else {
+              toast("결과 저장에 실패했어요");
+            }
           })
         }
         className="btn-glow w-full rounded-lg bg-red py-2.5 text-[13px] font-medium disabled:opacity-60"

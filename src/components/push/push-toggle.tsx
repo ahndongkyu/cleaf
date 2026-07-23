@@ -24,16 +24,19 @@ export function PushToggle() {
 
   useEffect(() => {
     const ok = typeof window !== "undefined" && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
-    setSupported(ok);
     // 아이폰은 홈 화면에 추가(PWA 설치)해서 앱으로 열어야만 푸시가 됨 (Safari 탭에선 미지원)
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
     const standalone =
       window.matchMedia?.("(display-mode: standalone)").matches ||
       (window.navigator as Navigator & { standalone?: boolean }).standalone === true;
-    setIosNeedsInstall(isIOS && !standalone);
+    const initialize = window.setTimeout(() => {
+      setSupported(ok);
+      setIosNeedsInstall(isIOS && !standalone);
+    }, 0);
     if (ok) {
       navigator.serviceWorker.getRegistration().then((reg) => reg?.pushManager.getSubscription()).then((s) => setEnabled(!!s)).catch(() => {});
     }
+    return () => window.clearTimeout(initialize);
   }, []);
 
   async function enable() {

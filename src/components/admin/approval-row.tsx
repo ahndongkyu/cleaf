@@ -43,8 +43,8 @@ export function ApprovalRow({
   const handleReject = () => {
     if (!window.confirm(`${profile.claimed_name ?? "이 신청"}을 거절할까요?`)) return;
     start(async () => {
-      await rejectSignup(profile.id);
-      toast("가입 신청을 거절했어요");
+      const result = await rejectSignup(profile.id);
+      toast(result?.ok ? "가입 신청을 거절했어요" : "거절 처리에 실패했어요");
     });
   };
 
@@ -85,8 +85,8 @@ export function ApprovalRow({
           onClick={() =>
             start(async () => {
               const name = members.find((m) => m.id === memberId)?.name ?? "";
-              await linkProfile(profile.id, memberId);
-              toast(`${name}(으)로 연결됐어요`);
+              const result = await linkProfile(profile.id, memberId);
+              toast(result?.ok ? `${name}(으)로 연결됐어요` : "가입 승인에 실패했어요");
             })
           }
           className="shrink-0 rounded-lg bg-navy px-4 text-[13px] font-medium text-white disabled:opacity-40"
@@ -105,8 +105,8 @@ export function ApprovalRow({
               disabled={pending || !profile.claimed_name}
               onClick={() =>
                 start(async () => {
-                  await createMemberFromSignup(profile.id);
-                  toast(`${profile.claimed_name} 신규 회원으로 승인됐어요`);
+                  const result = await createMemberFromSignup(profile.id);
+                  toast(result?.ok ? `${profile.claimed_name} 신규 회원으로 승인됐어요` : "신규 회원 승인에 실패했어요");
                 })
               }
               className="flex items-center justify-center gap-1.5 rounded-lg bg-red py-2.5 text-[13px] font-bold text-white disabled:opacity-40"

@@ -63,7 +63,10 @@ export function ParticipantVoteGrid({
     );
     const cls = `flex items-center gap-2 rounded-[10px] border px-2.5 py-2 ${gold ? "border-[#ef9f27] bg-[#ef9f27]/10" : "border-divider bg-card"}`;
     return votingOpen ? (
-      <button key={`member:${player.id}`} disabled={pending} onClick={() => start(async () => { await voteMvp(matchId, player.id); toast(`${player.name}에게 투표했어요`); })} className={cls}>
+      <button key={`member:${player.id}`} disabled={pending} onClick={() => start(async () => {
+        const result = await voteMvp(matchId, player.id);
+        toast(result?.ok ? `${player.name}에게 투표했어요` : "투표할 수 없거나 마감됐어요");
+      })} className={cls}>
         {inner}
       </button>
     ) : (

@@ -31,7 +31,10 @@ export async function GET(request: Request) {
   const token = await tokenRes.json();
 
   if (!token.id_token) {
-    console.error("kakao token error", token);
+    console.error("kakao token exchange failed", {
+      status: tokenRes.status,
+      error: typeof token?.error === "string" ? token.error : "unknown",
+    });
     return NextResponse.redirect(`${origin}/login?error=token`);
   }
 
