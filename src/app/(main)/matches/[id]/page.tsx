@@ -12,6 +12,7 @@ import { RsvpButtons } from "@/components/match/rsvp-buttons";
 import { VideoButton } from "@/components/match/video-button";
 import { ParticipantVoteGrid } from "@/components/match/participant-vote-grid";
 import { TeamLogo } from "@/components/ui/team-brand";
+import { SelfTeamMark } from "@/components/ui/self-team-mark";
 import { AWAY_UNIFORM, HOME_UNIFORM } from "@/lib/uniforms";
 
 export default async function MatchDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -282,14 +283,7 @@ function SelfMatchTeam({ side }: { side: "red" | "sky" }) {
   const red = side === "red";
   return (
     <div className="text-center">
-      <div
-        className="mx-auto mb-1.5 h-11 w-11 rounded-[13px] shadow-sm"
-        style={
-          red
-            ? { background: "repeating-linear-gradient(90deg, #e95662 0 8px, #fff 8px 16px)", border: "1px solid #f2b3ba" }
-            : { background: "#68b8e8", border: "1px solid #9bd2ef" }
-        }
-      />
+      <SelfTeamMark tone={red ? "red" : "blue"} className="mb-1.5" />
       <div className="text-[12px] font-bold text-fg">{red ? "레드" : "블루"}</div>
     </div>
   );

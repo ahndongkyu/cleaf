@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { OpponentField } from "@/components/match/opponent-field";
 import { UNIFORM_NAMES } from "@/lib/uniforms";
+import { SelfTeamMark } from "@/components/ui/self-team-mark";
 
 export function MatchSetupFields({
   defaultType = "match",
@@ -61,12 +62,9 @@ export function MatchSetupFields({
 }
 
 function TeamBadge({ tone, label }: { tone: "red" | "sky"; label: string }) {
-  const style = tone === "red"
-    ? { background: "repeating-linear-gradient(90deg, #e95662 0 7px, #fff 7px 14px)", border: "1px solid #f2b3ba" }
-    : { background: "#68b8e8", border: "1px solid #9bd2ef" };
   return (
     <div className="w-16 text-center">
-      <span className="mx-auto block h-11 w-11 rounded-[13px] shadow-sm" style={style} />
+      <SelfTeamMark tone={tone === "red" ? "red" : "blue"} />
       <span className="mt-1.5 block text-[12px] font-bold text-fg">{label}</span>
     </div>
   );
