@@ -3,10 +3,11 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Clock, ChevronRight, ChevronDown, Send, X } from "lucide-react";
-import { POSITION_COLOR, type Position } from "@/lib/mock";
+import { POSITION_COLOR, type Position } from "@/lib/positions";
 import { setAttendance } from "@/lib/actions/matches";
 import { addAttendComment, deleteAttendComment } from "@/lib/actions/attend";
 import type { AttendComment } from "@/lib/data/attend";
+import { toast } from "@/lib/toast";
 
 type Status = "going" | "notGoing" | "undecided";
 type Person = { name: string; position1: string };
@@ -47,6 +48,7 @@ export function AttendPollView({
 
   function vote(v: Status) {
     if (!canInteract || v === myStatus) return;
+    const previous = myStatus;
     setCounts((c) => {
       const n = { ...c };
       if (myStatus) n[myStatus] -= 1;
@@ -54,16 +56,37 @@ export function AttendPollView({
       return n;
     });
     setMyStatus(v);
-    start(async () => { await setAttendance(matchId, v); });
+    start(async () => {
+      const result = await setAttendance(matchId, v);
+      if (!result?.ok) {
+        setCounts((c) => {
+          const next = { ...c };
+          next[v] -= 1;
+          if (previous) next[previous] += 1;
+          return next;
+        });
+        setMyStatus(previous);
+        toast("참석 상태를 저장하지 못했어요");
+      }
+    });
   }
 
   function submit() {
     if (!newC.trim()) return;
-    start(async () => { await addAttendComment(matchId, newC); setNewC(""); router.refresh(); });
+    start(async () => {
+      const result = await addAttendComment(matchId, newC);
+      if (!result?.ok) return toast("댓글을 저장하지 못했어요");
+      setNewC("");
+      router.refresh();
+    });
   }
   function remove(id: string) {
     if (!window.confirm("댓글을 삭제할까요?")) return;
-    start(async () => { await deleteAttendComment(matchId, id); router.refresh(); });
+    start(async () => {
+      const result = await deleteAttendComment(matchId, id);
+      if (!result?.ok) return toast("댓글을 삭제하지 못했어요");
+      router.refresh();
+    });
   }
 
   return (
@@ -139,8 +162,9 @@ export function AttendPollView({
       {canInteract && (
         <div className="sticky bottom-2 flex items-center gap-2 rounded-full border border-line bg-card px-2 py-1.5 soft-card">
           <input
-            value={newC}
-            onChange={(e) => setNewC(e.target.value)}
+              value={newC}
+              onChange={(e) => setNewC(e.target.value)}
+              maxLength={1000}
             onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
             placeholder="댓글을 남겨보세요…"
             className="min-w-0 flex-1 bg-transparent px-3 text-[13px] outline-none"

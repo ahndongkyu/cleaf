@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { addGuest, deleteGuest, setGuestTeamSide } from "@/lib/actions/guests";
 import { toast } from "@/lib/toast";
-import { POSITION_BADGE, type Position } from "@/lib/mock";
+import { POSITION_BADGE, type Position } from "@/lib/positions";
 
 type Guest = { id: string; name: string; position1: Position; team_side: "red" | "sky" | null };
 const POS = ["FW", "MF", "DF", "GK"];
@@ -33,7 +33,14 @@ export function GuestManager({ matchId, guests, selfMatch = false }: { matchId: 
                 {selfMatch && (
                   <select
                     value={g.team_side ?? "red"}
-                    onChange={(event) => start(() => setGuestTeamSide(matchId, g.id, event.target.value === "red" || event.target.value === "sky" ? event.target.value : "red"))}
+                    onChange={(event) => start(async () => {
+                      const result = await setGuestTeamSide(
+                        matchId,
+                        g.id,
+                        event.target.value === "red" || event.target.value === "sky" ? event.target.value : "red",
+                      );
+                      if (!result.ok) toast("용병 팀을 변경하지 못했어요");
+                    })}
                     className="rounded-md border border-divider bg-card px-1.5 py-1 text-[11px]"
                     aria-label={`${g.name} 팀 배정`}
                   >
@@ -41,7 +48,10 @@ export function GuestManager({ matchId, guests, selfMatch = false }: { matchId: 
                     <option value="sky">블루</option>
                   </select>
                 )}
-                <button onClick={() => { if (!window.confirm(`${anonymized ? "용병" : `${g.name} 용병`}을 삭제하시겠습니까?`)) return; start(async () => { await deleteGuest(matchId, g.id); toast("용병이 삭제됐어요"); }); }} aria-label="삭제">
+                <button onClick={() => { if (!window.confirm(`${anonymized ? "용병" : `${g.name} 용병`}을 삭제하시겠습니까?`)) return; start(async () => {
+                  const result = await deleteGuest(matchId, g.id);
+                  toast(result?.ok ? "용병이 삭제됐어요" : "용병을 삭제하지 못했어요");
+                }); }} aria-label="삭제">
                   <Trash2 size={15} className="text-faint" />
                 </button>
               </div>
@@ -54,6 +64,7 @@ export function GuestManager({ matchId, guests, selfMatch = false }: { matchId: 
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
+          maxLength={40}
           placeholder="용병 이름"
           className="min-w-0 flex-1 rounded-lg border border-line bg-card px-3 py-2.5 text-sm outline-none placeholder:text-subtle"
         />
@@ -66,7 +77,12 @@ export function GuestManager({ matchId, guests, selfMatch = false }: { matchId: 
         </select>
         <button
           disabled={!name.trim() || pending}
-          onClick={() => start(async () => { await addGuest(matchId, name, pos); toast(`${name} 용병 추가`); setName(""); })}
+          onClick={() => start(async () => {
+            const result = await addGuest(matchId, name, pos);
+            if (!result?.ok) return toast("용병을 추가하지 못했어요");
+            toast(`${name} 용병 추가`);
+            setName("");
+          })}
           className="flex h-[42px] w-10 shrink-0 items-center justify-center rounded-lg bg-navy text-white disabled:opacity-40"
         >
           <Plus size={16} />

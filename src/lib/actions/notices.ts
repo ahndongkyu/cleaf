@@ -7,13 +7,21 @@ import { getMyProfile, isManager } from "@/lib/data/auth";
 import { sendPushToAll } from "@/lib/push";
 import { recordNotificationEvent } from "@/lib/notification-events";
 import { noticePlainText, sanitizeNoticeContent } from "@/lib/notice-content";
+import { boundedText, LIMITS } from "@/lib/validation";
+
+function noticeValues(formData: FormData) {
+  const title = boundedText(formData.get("title"), LIMITS.noticeTitle);
+  const rawContent = String(formData.get("content") ?? "");
+  if (!title || rawContent.length > LIMITS.noticeContent) return null;
+  const content = sanitizeNoticeContent(rawContent);
+  return noticePlainText(content) ? { title, content } : null;
+}
 
 export async function createNotice(formData: FormData) {
-  if (!(await isManager())) return;
-  const title = String(formData.get("title") ?? "").trim();
-  if (!title) return;
-  const content = sanitizeNoticeContent(String(formData.get("content") ?? ""));
-  if (!noticePlainText(content)) return;
+  if (!(await isManager())) throw new Error("공지 작성 권한이 없습니다.");
+  const values = noticeValues(formData);
+  if (!values) throw new Error("공지 입력값을 다시 확인해 주세요.");
+  const { title, content } = values;
   const profile = await getMyProfile();
 
   const supabase = await createClient();
@@ -27,8 +35,7 @@ export async function createNotice(formData: FormData) {
     .select("id")
     .single();
   if (error || !notice) {
-    console.error("createNotice", error);
-    return;
+    throw new Error("공지를 등록하지 못했습니다.");
   }
 
   await recordNotificationEvent(supabase, {
@@ -53,18 +60,18 @@ export async function createNotice(formData: FormData) {
 }
 
 export async function updateNotice(formData: FormData) {
-  if (!(await isManager())) return;
+  if (!(await isManager())) throw new Error("공지 수정 권한이 없습니다.");
   const id = String(formData.get("id") ?? "");
-  const title = String(formData.get("title") ?? "").trim();
-  const content = sanitizeNoticeContent(String(formData.get("content") ?? ""));
-  if (!id || !title || !noticePlainText(content)) return;
+  const values = noticeValues(formData);
+  if (!id || !values) throw new Error("공지 입력값을 다시 확인해 주세요.");
+  const { title, content } = values;
 
   const supabase = await createClient();
   const { error } = await supabase
     .from("notices")
     .update({ title, content })
     .eq("id", id);
-  if (error) return;
+  if (error) throw new Error("공지를 수정하지 못했습니다.");
 
   await supabase
     .from("notification_events")
@@ -102,11 +109,12 @@ export async function trackNoticeView(noticeId: string) {
 }
 
 export async function deleteNotice(formData: FormData) {
-  if (!(await isManager())) return;
+  if (!(await isManager())) throw new Error("공지 삭제 권한이 없습니다.");
   const id = String(formData.get("id") ?? "");
-  if (!id) return;
+  if (!id) throw new Error("삭제할 공지를 찾을 수 없습니다.");
   const supabase = await createClient();
-  await supabase.from("notices").delete().eq("id", id);
+  const { error } = await supabase.from("notices").delete().eq("id", id);
+  if (error) throw new Error("공지를 삭제하지 못했습니다.");
   await supabase.from("notification_events").delete().eq("kind", "notice").eq("reference_id", id);
   revalidatePath("/notices");
   revalidatePath("/notifications");

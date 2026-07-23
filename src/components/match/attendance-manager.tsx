@@ -3,8 +3,9 @@
 import { useMemo, useState, useTransition } from "react";
 import { setAttendanceFor, setAttendanceTeamSide } from "@/lib/actions/matches";
 import { setGuestTeamSide } from "@/lib/actions/guests";
-import { type Position } from "@/lib/mock";
+import { type Position } from "@/lib/positions";
 import { Avatar } from "@/components/ui/avatar";
+import { toast } from "@/lib/toast";
 
 type St = "going" | "notGoing" | "undecided";
 type Member = { id: string; name: string; position1: Position };
@@ -53,9 +54,18 @@ export function AttendanceManager({
   }, [statuses, members]);
 
   function set(id: string, s: St) {
+    const previousStatus = statuses[id];
+    const previousSide = sides[id];
     setStatuses((prev) => ({ ...prev, [id]: s }));
     if (s !== "going") setSides((prev) => ({ ...prev, [id]: null }));
-    start(() => setAttendanceFor(matchId, id, s));
+    start(async () => {
+      const result = await setAttendanceFor(matchId, id, s);
+      if (!result.ok) {
+        setStatuses((prev) => ({ ...prev, [id]: previousStatus }));
+        setSides((prev) => ({ ...prev, [id]: previousSide }));
+        toast("참석 상태를 변경하지 못했어요");
+      }
+    });
   }
 
   function setSelfMatchAttendance(id: string, value: "red" | "sky" | "notGoing") {
@@ -63,8 +73,11 @@ export function AttendanceManager({
       setStatuses((prev) => ({ ...prev, [id]: "notGoing" }));
       setSides((prev) => ({ ...prev, [id]: null }));
       start(async () => {
-        await setAttendanceTeamSide(matchId, id, null);
-        await setAttendanceFor(matchId, id, "notGoing");
+        const [sideResult, attendanceResult] = await Promise.all([
+          setAttendanceTeamSide(matchId, id, null),
+          setAttendanceFor(matchId, id, "notGoing"),
+        ]);
+        if (!sideResult.ok || !attendanceResult.ok) toast("참석 상태를 변경하지 못했어요");
       });
       return;
     }
@@ -72,8 +85,11 @@ export function AttendanceManager({
     setStatuses((prev) => ({ ...prev, [id]: "going" }));
     setSides((prev) => ({ ...prev, [id]: value }));
     start(async () => {
-      await setAttendanceFor(matchId, id, "going");
-      await setAttendanceTeamSide(matchId, id, value);
+      const attendanceResult = await setAttendanceFor(matchId, id, "going");
+      const sideResult = attendanceResult.ok
+        ? await setAttendanceTeamSide(matchId, id, value)
+        : { ok: false };
+      if (!attendanceResult.ok || !sideResult.ok) toast("팀 배정을 변경하지 못했어요");
     });
   }
 
@@ -87,11 +103,12 @@ export function AttendanceManager({
     setSides((prev) => ({ ...prev, ...Object.fromEntries(participants.filter((p) => p.kind === "member").map((p) => [p.id, next[p.id]])) }));
     setGuestSides((prev) => ({ ...prev, ...Object.fromEntries(participants.filter((p) => p.kind === "guest").map((p) => [p.id, next[p.id]])) }));
     start(async () => {
-      await Promise.all(participants.map((participant) =>
+      const results = await Promise.all(participants.map((participant) =>
         participant.kind === "member"
           ? setAttendanceTeamSide(matchId, participant.id, next[participant.id])
           : setGuestTeamSide(matchId, participant.id, next[participant.id]),
       ));
+      if (results.some((result) => !result.ok)) toast("일부 팀 배정을 저장하지 못했어요");
     });
   }
 

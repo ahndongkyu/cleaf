@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Position } from "@/lib/mock";
+import type { Position } from "@/lib/positions";
 import { dateInSeoul, yearInSeoul } from "@/lib/date";
 
 export type MatchRow = {

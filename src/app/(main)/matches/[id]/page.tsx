@@ -7,7 +7,7 @@ import { getMembers } from "@/lib/data/members";
 import { getGuests } from "@/lib/data/guests";
 import { getMyProfile } from "@/lib/data/auth";
 import { formatDateKo } from "@/lib/format";
-import { POSITION_BADGE } from "@/lib/mock";
+import { POSITION_BADGE } from "@/lib/positions";
 import { RsvpButtons } from "@/components/match/rsvp-buttons";
 import { VideoButton } from "@/components/match/video-button";
 import { ParticipantVoteGrid } from "@/components/match/participant-vote-grid";

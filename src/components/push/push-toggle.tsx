@@ -55,7 +55,8 @@ export function PushToggle() {
         applicationServerKey: urlBase64ToUint8Array(VAPID),
       });
       const j = sub.toJSON();
-      await saveSubscription({ endpoint: sub.endpoint, p256dh: j.keys!.p256dh, auth: j.keys!.auth });
+      const result = await saveSubscription({ endpoint: sub.endpoint, p256dh: j.keys!.p256dh, auth: j.keys!.auth });
+      if (!result?.ok) throw new Error("subscription save failed");
       setEnabled(true);
       toast("알림이 켜졌어요");
     } catch {
@@ -70,7 +71,8 @@ export function PushToggle() {
       const reg = await navigator.serviceWorker.getRegistration();
       const sub = await reg?.pushManager.getSubscription();
       if (sub) {
-        await removeSubscription(sub.endpoint);
+        const result = await removeSubscription(sub.endpoint);
+        if (!result?.ok) throw new Error("subscription delete failed");
         await sub.unsubscribe();
       }
       setEnabled(false);

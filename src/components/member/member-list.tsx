@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { POSITION_BADGE, POSITION_LABEL, DETAIL_POSITION_LABEL, type Position } from "@/lib/mock";
+import { POSITION_BADGE, POSITION_LABEL, DETAIL_POSITION_LABEL, type Position } from "@/lib/positions";
 import type { MemberRow } from "@/lib/data/members";
 import { Avatar } from "@/components/ui/avatar";
 

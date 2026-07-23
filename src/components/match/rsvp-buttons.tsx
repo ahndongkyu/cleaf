@@ -25,8 +25,8 @@ export function RsvpButtons({ matchId, current }: { matchId: string; current: St
             disabled={pending}
             onClick={() =>
               startTransition(async () => {
-                await setAttendance(matchId, o.v);
-                toast(`${o.label}(으)로 체크됐어요`);
+                const result = await setAttendance(matchId, o.v);
+                toast(result?.ok ? `${o.label}(으)로 체크됐어요` : "참석 상태를 저장하지 못했어요");
               })
             }
             className="flex-1 rounded-[12px] py-2.5 text-[13px] font-bold disabled:opacity-60"

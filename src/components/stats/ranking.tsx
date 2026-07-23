@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Crown } from "lucide-react";
-import { POSITION_COLOR } from "@/lib/mock";
+import { POSITION_COLOR } from "@/lib/positions";
 import type { MemberStat } from "@/lib/data/stats";
 
 const TABS: { label: string; unit: string; get: (s: MemberStat) => number }[] = [

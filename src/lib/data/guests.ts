@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Position } from "@/lib/mock";
+import type { Position } from "@/lib/positions";
 
 export type GuestRow = { id: string; name: string; position1: Position; team_side: "red" | "sky" | null };
 

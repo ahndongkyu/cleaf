@@ -4,7 +4,7 @@ import { useState, useTransition, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, UserPlus, UserMinus, RotateCcw, Check, Share2, ChevronDown, Search, ArrowRight, Trash2 } from "lucide-react";
 import { toPng } from "html-to-image";
-import { POSITION_COLOR, type Position } from "@/lib/mock";
+import { POSITION_COLOR, type Position } from "@/lib/positions";
 import { saveFormation } from "@/lib/actions/formations";
 import { setAttendanceFor } from "@/lib/actions/matches";
 import type { FormationLayout, FormationTeamSide } from "@/lib/data/formations";

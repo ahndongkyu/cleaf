@@ -3,11 +3,12 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Heart, MessageCircle, Send, Pencil, Trash2, X } from "lucide-react";
-import { POSITION_COLOR, type Position } from "@/lib/mock";
+import { POSITION_COLOR, type Position } from "@/lib/positions";
 import { saveMatchComment, deleteMatchComment, addComment, deleteComment, toggleLike } from "@/lib/actions/comments";
 import type { MatchTalk, TalkComment } from "@/lib/data/comments";
 import { formatDateKo } from "@/lib/format";
 import { TeamLogo } from "@/components/ui/team-brand";
+import { toast } from "@/lib/toast";
 
 export function TalkView({
   matchId,
@@ -30,19 +31,39 @@ export function TalkView({
 
   const savePost = () => {
     if (!postText.trim()) return;
-    start(async () => { await saveMatchComment(matchId, postText); setEditing(false); router.refresh(); });
+    start(async () => {
+      const result = await saveMatchComment(matchId, postText);
+      if (!result?.ok) return toast("코멘트를 저장하지 못했어요");
+      setEditing(false);
+      router.refresh();
+    });
   };
   const removePost = () => {
     if (!window.confirm("코멘트를 삭제할까요?")) return;
-    start(async () => { await deleteMatchComment(matchId); setPostText(""); router.refresh(); });
+    start(async () => {
+      const result = await deleteMatchComment(matchId);
+      if (!result?.ok) return toast("코멘트를 삭제하지 못했어요");
+      setPostText("");
+      router.refresh();
+    });
   };
   const submitComment = (parentId: string | null, text: string, clear: () => void) => {
     if (!text.trim()) return;
-    start(async () => { await addComment(matchId, text, parentId); clear(); setReplyTo(null); router.refresh(); });
+    start(async () => {
+      const result = await addComment(matchId, text, parentId);
+      if (!result?.ok) return toast("댓글을 저장하지 못했어요");
+      clear();
+      setReplyTo(null);
+      router.refresh();
+    });
   };
   const removeComment = (id: string) => {
     if (!window.confirm("댓글을 삭제할까요?")) return;
-    start(async () => { await deleteComment(matchId, id); router.refresh(); });
+    start(async () => {
+      const result = await deleteComment(matchId, id);
+      if (!result?.ok) return toast("댓글을 삭제하지 못했어요");
+      router.refresh();
+    });
   };
 
   return (
@@ -184,7 +205,19 @@ function LikeBtn({
   return (
     <button
       disabled={disabled}
-      onClick={() => { const n = !on; setOn(n); setCount((c) => c + (n ? 1 : -1)); start(() => toggleLike(matchId, target, targetId)); }}
+      onClick={() => {
+        const n = !on;
+        setOn(n);
+        setCount((c) => c + (n ? 1 : -1));
+        start(async () => {
+          const result = await toggleLike(matchId, target, targetId);
+          if (!result?.ok) {
+            setOn(!n);
+            setCount((c) => c + (n ? -1 : 1));
+            toast("좋아요를 반영하지 못했어요");
+          }
+        });
+      }}
       className={`flex items-center gap-1 font-bold disabled:opacity-50 ${small ? "text-[10.5px]" : "text-[12.5px]"} ${on ? "text-[#e8305a]" : small ? "text-subtle" : "text-muted"}`}
     >
       <Heart size={small ? 12 : 15} fill={on ? "currentColor" : "none"} /> {count}

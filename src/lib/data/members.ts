@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Position, Role } from "@/lib/mock";
+import type { Position, Role } from "@/lib/positions";
 
 export type MemberRow = {
   id: string;

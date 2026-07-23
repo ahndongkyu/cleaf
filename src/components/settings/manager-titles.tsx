@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, X, Check } from "lucide-react";
-import { POSITION_COLOR, type Position } from "@/lib/mock";
+import { POSITION_COLOR, type Position } from "@/lib/positions";
 import { addManagerTitle, removeManagerTitle, setMemberTitle } from "@/lib/actions/titles";
 import { toast } from "@/lib/toast";
 import type { ManagerTitle } from "@/lib/data/titles";
@@ -19,14 +19,30 @@ export function ManagerTitles({ titles, managers }: { titles: ManagerTitle[]; ma
   const add = () => {
     const l = label.trim();
     if (!l) return;
-    start(async () => { await addManagerTitle(l); setLabel(""); setAdding(false); router.refresh(); });
+    start(async () => {
+      const result = await addManagerTitle(l);
+      toast(result.message);
+      if (result.ok) {
+        setLabel("");
+        setAdding(false);
+        router.refresh();
+      }
+    });
   };
   const remove = (id: string, lb: string) => {
     if (!window.confirm(`'${lb}' 역할을 삭제할까요? (부여된 회원도 해제돼요)`)) return;
-    start(async () => { await removeManagerTitle(id); router.refresh(); });
+    start(async () => {
+      const result = await removeManagerTitle(id);
+      toast(result.message);
+      if (result.ok) router.refresh();
+    });
   };
   const assign = (memberId: string, title: string) => {
-    start(async () => { await setMemberTitle(memberId, title || null); toast("직책이 변경됐어요"); router.refresh(); });
+    start(async () => {
+      const result = await setMemberTitle(memberId, title || null);
+      toast(result.message);
+      if (result.ok) router.refresh();
+    });
   };
 
   return (
@@ -48,6 +64,7 @@ export function ManagerTitles({ titles, managers }: { titles: ManagerTitle[]; ma
                 onChange={(e) => setLabel(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") add(); }}
                 placeholder="예: 감독, 총무, 주장"
+                maxLength={30}
                 className="input flex-1"
               />
               <button onClick={add} className="shrink-0 rounded-lg bg-red px-3 text-[13px] font-bold text-white"><Check size={16} /></button>

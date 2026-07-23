@@ -3,7 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Search, UserPlus, Pencil, ArrowLeft } from "lucide-react";
-import { POSITION_BADGE } from "@/lib/mock";
+import { POSITION_BADGE } from "@/lib/positions";
 import type { MemberRow } from "@/lib/data/members";
 
 const CHO = ["ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ"];

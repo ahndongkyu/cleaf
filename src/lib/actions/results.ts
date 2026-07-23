@@ -147,11 +147,12 @@ export async function addGoal(
 
 // 득점 삭제
 export async function deleteGoal(formData: FormData) {
-  if (!(await isManager())) return;
+  if (!(await isManager())) throw new Error("득점 기록 삭제 권한이 없습니다.");
   const goalId = String(formData.get("goalId") ?? "");
   const matchId = String(formData.get("matchId") ?? "");
-  if (!goalId) return;
+  if (!goalId || !matchId) throw new Error("삭제할 득점 기록을 찾을 수 없습니다.");
   const supabase = await createClient();
-  await supabase.from("goals").delete().eq("id", goalId);
+  const { error } = await supabase.from("goals").delete().eq("id", goalId).eq("match_id", matchId);
+  if (error) throw new Error("득점 기록을 삭제하지 못했습니다.");
   revalidateMatch(matchId);
 }

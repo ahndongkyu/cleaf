@@ -19,6 +19,17 @@ export function VenueManager({ venues }: { venues: Venue[] }) {
     if (result.ok) setAddFormVersion((value) => value + 1);
   }
 
+  async function handleUpdate(formData: FormData) {
+    const result = await updateVenue(formData);
+    toast(result.message);
+    if (result.ok) setEditingId(null);
+  }
+
+  async function handleRemove(formData: FormData) {
+    const result = await removeVenue(formData);
+    toast(result.message);
+  }
+
   return (
     <section>
       <div className="mb-2.5 flex items-center justify-between">
@@ -49,7 +60,7 @@ export function VenueManager({ venues }: { venues: Venue[] }) {
           <div className="rounded-[14px] border border-dashed border-borderblue px-4 py-6 text-center text-[12px] text-subtle">등록된 경기장이 없어요.</div>
         )}
         {venues.map((venue) => editingId === venue.id ? (
-          <form key={venue.id} action={updateVenue} className="space-y-3 rounded-[16px] border border-borderblue bg-card p-3.5 soft-card">
+          <form key={venue.id} action={handleUpdate} className="space-y-3 rounded-[16px] border border-borderblue bg-card p-3.5 soft-card">
             <input type="hidden" name="id" value={venue.id} />
             <PlaceSearch defaultPlace={venue.name} defaultAddress={venue.address} defaultLat={venue.lat} defaultLng={venue.lng} requirePlace requireAddress />
             <div className="grid grid-cols-2 gap-2">
@@ -66,7 +77,7 @@ export function VenueManager({ venues }: { venues: Venue[] }) {
                 <div className="mt-0.5 text-[11px] leading-relaxed text-subtle">{venue.address}</div>
               </div>
               <button type="button" aria-label={`${venue.name} 수정`} onClick={() => setEditingId(venue.id)} className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-divider text-muted"><Pencil size={14} /></button>
-              <form action={removeVenue}>
+              <form action={handleRemove}>
                 <input type="hidden" name="id" value={venue.id} />
                 <ConfirmSubmit message={`${venue.name} 경기장을 삭제하시겠습니까?`} className="flex h-8 w-8 items-center justify-center rounded-[9px] border border-danger/30 text-danger"><Trash2 size={14} /></ConfirmSubmit>
               </form>

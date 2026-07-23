@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { Position } from "@/lib/mock";
+import type { Position } from "@/lib/positions";
 import { currentSeason } from "@/lib/season";
 import { dateInSeoul } from "@/lib/date";
 

@@ -4,7 +4,7 @@ import { ArrowLeft, MessageCircle, Pencil } from "lucide-react";
 import { getMemberById, getMemberKakaoLink } from "@/lib/data/members";
 import { getMemberStat } from "@/lib/data/stats";
 import { isManager, getMyProfile } from "@/lib/data/auth";
-import { POSITION_LABEL, POSITION_BADGE, DETAIL_POSITION_LABEL } from "@/lib/mock";
+import { POSITION_LABEL, POSITION_BADGE, DETAIL_POSITION_LABEL } from "@/lib/positions";
 import { Avatar } from "@/components/ui/avatar";
 import { getUniformSwatch } from "@/lib/uniforms";
 import { yearInSeoul } from "@/lib/date";
