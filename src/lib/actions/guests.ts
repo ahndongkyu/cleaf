@@ -18,7 +18,7 @@ export async function addGuest(matchId: string, name: string, position1: string)
     match_id: matchId,
     name: n,
     position1: position1 || "MF",
-    team_side: match?.type === "self" ? "red" : null,
+    team_side: null,
   });
   if (error) return { ok: false };
   revalidatePath(`/admin/matches/${matchId}/attendance`);

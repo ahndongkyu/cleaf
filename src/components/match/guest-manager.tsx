@@ -2,14 +2,14 @@
 
 import { useState, useTransition } from "react";
 import { Plus, Trash2 } from "lucide-react";
-import { addGuest, deleteGuest, setGuestTeamSide } from "@/lib/actions/guests";
+import { addGuest, deleteGuest } from "@/lib/actions/guests";
 import { toast } from "@/lib/toast";
 import { POSITION_BADGE, type Position } from "@/lib/positions";
 
 type Guest = { id: string; name: string; position1: Position; team_side: "red" | "sky" | null };
 const POS = ["FW", "MF", "DF", "GK"];
 
-export function GuestManager({ matchId, guests, selfMatch = false }: { matchId: string; guests: Guest[]; selfMatch?: boolean }) {
+export function GuestManager({ matchId, guests }: { matchId: string; guests: Guest[] }) {
   const [name, setName] = useState("");
   const [pos, setPos] = useState("MF");
   const [pending, start] = useTransition();
@@ -30,24 +30,6 @@ export function GuestManager({ matchId, guests, selfMatch = false }: { matchId: 
                   {g.name}
                   {!anonymized && <span className="ml-1 text-[10px] text-faint">용병</span>}
                 </span>
-                {selfMatch && (
-                  <select
-                    value={g.team_side ?? "red"}
-                    onChange={(event) => start(async () => {
-                      const result = await setGuestTeamSide(
-                        matchId,
-                        g.id,
-                        event.target.value === "red" || event.target.value === "sky" ? event.target.value : "red",
-                      );
-                      if (!result.ok) toast("용병 팀을 변경하지 못했어요");
-                    })}
-                    className="rounded-md border border-divider bg-card px-1.5 py-1 text-[11px]"
-                    aria-label={`${g.name} 팀 배정`}
-                  >
-                    <option value="red">레드</option>
-                    <option value="sky">블루</option>
-                  </select>
-                )}
                 <button onClick={() => { if (!window.confirm(`${anonymized ? "용병" : `${g.name} 용병`}을 삭제하시겠습니까?`)) return; start(async () => {
                   const result = await deleteGuest(matchId, g.id);
                   toast(result?.ok ? "용병이 삭제됐어요" : "용병을 삭제하지 못했어요");

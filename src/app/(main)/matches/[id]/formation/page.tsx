@@ -7,7 +7,7 @@ import { getMembers } from "@/lib/data/members";
 import { getGuests } from "@/lib/data/guests";
 import { getMyProfile } from "@/lib/data/auth";
 import { MatchFormation, type PoolPlayer } from "@/components/formation/match-formation";
-import { SelfMatchFormations } from "@/components/formation/self-match-formations";
+import { SelfMatchFormations, type SelfMatchParticipant } from "@/components/formation/self-match-formations";
 import { AWAY_UNIFORM, HOME_UNIFORM } from "@/lib/uniforms";
 
 export default async function MatchFormationPage({ params }: { params: Promise<{ id: string }> }) {
@@ -37,22 +37,31 @@ export default async function MatchFormationPage({ params }: { params: Promise<{
       .map((a) => ({ id: a.members!.id, name: a.members!.name, number: numOf(a.members!.member_numbers) })),
     ...guests.map((g) => ({ id: `guest:${g.id}`, name: guestName(g.name), number: null })),
   ];
-  const teamPool = (side: "red" | "sky", uniform: string): PoolPlayer[] => [
+  const selfParticipants: SelfMatchParticipant[] = [
     ...attendingMembers
-      .filter((a) => a.team_side === side)
       .map((a) => ({
         id: a.members!.id,
+        entityId: a.members!.id,
+        kind: "member" as const,
         name: a.members!.name,
-        number: numOf(a.members!.member_numbers, uniform),
+        position1: a.members!.position1,
+        teamSide: a.team_side,
+        redNumber: numOf(a.members!.member_numbers, HOME_UNIFORM),
+        blueNumber: numOf(a.members!.member_numbers, AWAY_UNIFORM),
       })),
     ...guests
-      .filter((g) => g.team_side === side)
-      .map((g) => ({ id: `guest:${g.id}`, name: guestName(g.name), number: null })),
+      .map((g) => ({
+        id: `guest:${g.id}`,
+        entityId: g.id,
+        kind: "guest" as const,
+        name: guestName(g.name),
+        position1: g.position1,
+        teamSide: g.team_side,
+        redNumber: null,
+        blueNumber: null,
+      })),
   ];
-  const redPool = teamPool("red", HOME_UNIFORM);
-  const skyPool = teamPool("sky", AWAY_UNIFORM);
-  const unassignedCount =
-    attendingMembers.filter((a) => !a.team_side).length + guests.filter((g) => !g.team_side).length;
+  const unassignedCount = selfParticipants.filter((participant) => !participant.teamSide).length;
 
   const poolIds = new Set(pool.map((p) => p.id));
   const roster: PoolPlayer[] = members
@@ -76,17 +85,14 @@ export default async function MatchFormationPage({ params }: { params: Promise<{
               {isManager && (
                 <>
                   {" "}
-                  <Link href={`/admin/matches/${id}/attendance`} className="font-bold underline underline-offset-2">
-                    참가자 관리에서 배정하기
-                  </Link>
+                  레드 또는 블루 탭에서 배정해 주세요.
                 </>
               )}
             </div>
           )}
           <SelfMatchFormations
             matchId={id}
-            redPool={redPool}
-            skyPool={skyPool}
+            participants={selfParticipants}
             redInitial={redInitial}
             skyInitial={skyInitial}
             isManager={isManager}

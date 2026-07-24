@@ -228,14 +228,63 @@ export async function setAttendanceFor(
   const supabase = await createClient();
   const { data: match } = await supabase.from("matches").select("status").eq("id", matchId).maybeSingle();
   if (!match || match.status === "cancelled") return { ok: false };
+  const attendance = {
+    match_id: matchId,
+    member_id: memberId,
+    status,
+    source: "manager" as const,
+    ...(status === "going" ? {} : { team_side: null }),
+  };
   const { error } = await supabase
     .from("attendances")
     .upsert(
-      { match_id: matchId, member_id: memberId, status, source: "manager" },
+      attendance,
       { onConflict: "match_id,member_id" },
     );
   if (error) return { ok: false };
   revalidatePath(`/admin/matches/${matchId}/attendance`);
+  revalidatePath(`/matches/${matchId}`);
+  revalidatePath("/");
+  return { ok: true };
+}
+
+export type SelfMatchTeamAssignment = {
+  kind: "member" | "guest";
+  id: string;
+  teamSide: "red" | "sky";
+};
+
+export async function assignSelfMatchTeams(
+  matchId: string,
+  assignments: SelfMatchTeamAssignment[],
+) {
+  if (
+    !(await isManager()) ||
+    !matchId ||
+    !Array.isArray(assignments) ||
+    assignments.length === 0 ||
+    assignments.length > 200 ||
+    assignments.some(
+      (assignment) =>
+        !assignment.id ||
+        (assignment.kind !== "member" && assignment.kind !== "guest") ||
+        (assignment.teamSide !== "red" && assignment.teamSide !== "sky"),
+    )
+  ) return { ok: false };
+
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("assign_self_match_teams", {
+    requested_match_id: matchId,
+    requested_assignments: assignments.map((assignment) => ({
+      kind: assignment.kind,
+      id: assignment.id,
+      team_side: assignment.teamSide,
+    })),
+  });
+  if (error || !data) return { ok: false };
+
+  revalidatePath(`/admin/matches/${matchId}/attendance`);
+  revalidatePath(`/matches/${matchId}/formation`);
   revalidatePath(`/matches/${matchId}`);
   revalidatePath("/");
   return { ok: true };

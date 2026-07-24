@@ -48,6 +48,7 @@ export default async function MatchDetailPage({ params }: { params: Promise<{ id
   const d = formatDateKo(match.match_date);
 
   const going = attendances.filter((a) => a.status === "going");
+  const participantCount = going.filter((attendance) => attendance.members).length + guests.length;
   const counts = {
     going: attendances.filter((a) => a.status === "going").length,
     notGoing: attendances.filter((a) => a.status === "notGoing").length,
@@ -232,7 +233,9 @@ export default async function MatchDetailPage({ params }: { params: Promise<{ id
       {/* 참가 선수 (+ MOM 투표) */}
       {!cancelled && <div>
         <div className="mb-2.5 flex items-center justify-between">
-          <h2 className="text-[13px] text-muted">참가 선수</h2>
+          <h2 className="text-[13px] text-muted">
+            참가 선수 <span className="font-semibold text-fg">{participantCount}명</span>
+          </h2>
           {isManager ? (
             <Link href={`/admin/matches/${id}/attendance`} className="rounded-lg border border-line px-2.5 py-1 text-[11px] text-muted">
               참석 관리

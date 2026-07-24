@@ -29,14 +29,12 @@ export default async function AttendancePage({ params }: { params: Promise<{ id:
         <AttendanceManager
           matchId={id}
           members={members.map((m) => ({ id: m.id, name: m.name, position1: m.position1 }))}
-          guests={guests.map((guest) => ({ id: guest.id, name: guest.name, team_side: guest.team_side }))}
           initial={map}
-          selfMatch={match.type === "self"}
         />
       )}
 
       <div className="border-t border-divider pt-4">
-        <GuestManager matchId={id} guests={guests} selfMatch={match.type === "self"} />
+        <GuestManager matchId={id} guests={guests} />
       </div>
     </div>
   );
